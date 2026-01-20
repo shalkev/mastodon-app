@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RealEstate Pro - Financial Dashboard</title>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Icons (Phosphor Icons or equivalent via CDN for speed) -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-icon">
+                    <i class="ph-fill ph-buildings"></i>
+                </div>
+                <!-- Using a text logo for now -->
+                <h1 class="logo-text">RealEstate Pro</h1>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <h3 class="nav-label">Menu</h3>
+                    <ul>
+                        <li><a href="#"><i class="ph ph-squares-four"></i> Dashboard</a></li>
+                        <li><a href="#"><i class="ph ph-house-line"></i> Properties</a></li>
+                        <li><a href="#"><i class="ph ph-chart-line-up"></i> Analytics</a></li>
+                        <li class="active"><a href="#"><i class="ph ph-currency-dollar"></i> Financial</a></li>
+                        <li><a href="#"><i class="ph ph-files"></i> Documents</a></li>
+                    </ul>
+                </div>
+
+                <div class="nav-section">
+                    <h3 class="nav-label">General</h3>
+                    <ul>
+                        <li><a href="#"><i class="ph ph-gear"></i> Settings</a></li>
+                        <li><a href="#"><i class="ph ph-question"></i> Help</a></li>
+                        <li><a href="#"><i class="ph ph-sign-out"></i> Logout</a></li>
+                    </ul>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="upgrade-card">
+                    <h3>Upgrade to Pro</h3>
+                    <p>Unlock advanced analytics and manage unlimited properties</p>
+                    <button class="btn-upgrade">Upgrade Now</button>
+                    <button class="btn-learn">Learn More</button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="top-header">
+                <div class="header-left">
+                    <h2>Financial</h2>
+                    <p class="breadcrumbs">Manage finances, transactions, and invoices</p>
+                </div>
+                <div class="header-right">
+                    <div class="search-bar">
+                        <i class="ph ph-magnifying-glass"></i>
+                        <input type="text" placeholder="Search by property, location, or client">
+                    </div>
+                    <button class="btn-primary-action"><i class="ph ph-plus"></i> Add Transactions</button>
+                    <button class="icon-btn notification-btn">
+                        <i class="ph ph-bell"></i>
+                        <span class="badge-dot"></span>
+                    </button>
+                    <div class="user-profile">
+                        <div class="avatar">Be</div>
+                        <div class="user-info">
+                            <span class="user-name">Be Confidency</span>
+                            <span class="user-email">helloconfidenc@gmail.com</span>
+                        </div>
+                        <i class="ph ph-caret-down"></i>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Sub Header (Tabs) -->
+            <div class="sub-header">
+                <div class="tabs">
+                    <button class="tab active">Overview</button>
+                    <button class="tab">Transactions</button>
+                    <button class="tab">Invoices</button>
+                </div>
+                <button class="btn-export"><i class="ph ph-download-simple"></i> Export</button>
+            </div>
+
+
+            <!-- Views -->
+            <div id="overview-view" class="view-section active-view">
+                <div class="dashboard-grid">
+                    <!-- KPI Cards -->
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <span>Total Income (This Month)</span>
+                            <div class="icon-box icon-green"><i class="ph ph-currency-dollar"></i></div>
+                        </div>
+                        <div class="kpi-value">$590,000</div>
+                        <div class="kpi-trend positive"><i class="ph ph-trend-up"></i> +18.2%</div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <span>Total Expenses (This Month)</span>
+                            <div class="icon-box icon-red"><i class="ph ph-trend-down"></i></div>
+                        </div>
+                        <div class="kpi-value">$205,000</div>
+                        <div class="kpi-trend negative"><i class="ph ph-trend-down"></i> -8.5%</div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <span>Net Profit (This Month)</span>
+                            <div class="icon-box icon-gray"><i class="ph ph-wallet"></i></div>
+                        </div>
+                        <div class="kpi-value">$385,000</div>
+                        <div class="kpi-trend positive"><i class="ph ph-trend-up"></i> +24.3%</div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-header">
+                            <span>Pending Payments</span>
+                            <div class="icon-box icon-orange"><i class="ph ph-hourglass"></i></div>
+                        </div>
+                        <div class="kpi-value">$128,750</div>
+                        <div class="kpi-trend urgent"><i class="ph ph-warning-circle"></i> 3 Overdue</div>
+                    </div>
+
+                    <!-- Charts Row 1 -->
+                    <div class="chart-container wide-chart">
+                        <div class="chart-header">
+                            <h3>Cash Flow Analysis</h3>
+                            <div class="chart-legend">
+                                <span class="legend-item"><span class="dot green"></span> Income</span>
+                                <span class="legend-item"><span class="dot red"></span> Expenses</span>
+                                <span class="legend-item"><span class="dot yellow"></span> Net</span>
+                            </div>
+                            <select class="chart-filter">
+                                <option>This Year</option>
+                            </select>
+                        </div>
+                        <div class="canvas-wrapper">
+                            <canvas id="cashFlowChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-container donut-chart">
+                        <div class="chart-header">
+                            <h3>Expense Breakdown</h3>
+                        </div>
+                        <div class="canvas-wrapper relative">
+                            <canvas id="expenseChart"></canvas>
+                            <div class="donut-center-text">
+                                <span class="label">Total Expenses</span>
+                                <span class="value">$205,000</span>
+                            </div>
+                        </div>
+                        <div class="custom-legend-grid">
+                            <!-- Legend items will be here or in chart -->
+                            <div class="legend-row">
+                                <span class="dot-sm green"></span> 28% Marketing: $57.4k
+                            </div>
+                            <div class="legend-row">
+                                <span class="dot-sm purple"></span> 22% Operations: $45.1k
+                            </div>
+                            <div class="legend-row">
+                                <span class="dot-sm red"></span> 11% Services: $22.5k
+                            </div>
+                            <div class="legend-row">
+                                <span class="dot-sm blue"></span> 28% Other: $57.4k
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Row 2 -->
+                    <div class="chart-container full-width-chart">
+                        <div class="chart-header">
+                            <h3>Revenue Comparison</h3>
+                            <div class="chart-legend">
+                                <span class="legend-item"><span class="dot green"></span> 2026</span>
+                                <span class="legend-item"><span class="dot grey"></span> 2025</span>
+                            </div>
+                        </div>
+                        <div class="canvas-wrapper">
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Transactions View -->
+            <div id="transactions-view" class="view-section" style="display: none;">
+                <div class="kpi-card full-width">
+                    <div class="table-header">
+                        <h3>Transactions History</h3>
+                        <div class="table-actions">
+                            <input type="text" placeholder="Filter..." class="table-filter">
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Description</th>
+                                    <th>Property</th>
+                                    <th>Type</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transactions-table-body">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="pagination">
+                        <span>Showing 1-10 of 50</span>
+                        <div class="page-controls">
+                            <button disabled>&lt;</button>
+                            <button class="active">1</button>
+                            <button>2</button>
+                            <button>3</button>
+                            <button>&gt;</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Invoices View -->
+            <div id="invoices-view" class="view-section" style="display: none;">
+                <div class="kpi-card full-width">
+                    <div class="table-header">
+                        <h3>Invoices</h3>
+                        <div class="table-actions">
+                            <button class="btn-primary-action small">+ Duplicate</button>
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Invoice #</th>
+                                    <th>Client</th>
+                                    <th>Property</th>
+                                    <th>Due Date</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="invoices-table-body">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Properties View (Placeholder) -->
+            <div id="properties-view" class="view-section" style="display: none; padding-bottom: 40px;">
+                <div class="kpi-card full-width">
+                    <div class="table-header">
+                        <h3>Properties</h3>
+                        <div class="table-actions">
+                            <button class="btn-primary-action small">+ Add Property</button>
+                        </div>
+                    </div>
+                    <div style="text-align: center; padding: 40px; color: var(--text-secondary);">
+                        <i class="ph ph-house-line" style="font-size: 48px; margin-bottom: 16px;"></i>
+                        <p>No properties found. Add your first property to get started.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics View (Placeholder) -->
+            <div id="analytics-view" class="view-section" style="display: none;">
+                <div class="kpi-card full-width" style="text-align: center; padding: 60px;">
+                    <i class="ph ph-chart-line-up"
+                        style="font-size: 48px; margin-bottom: 16px; color: var(--primary-color);"></i>
+                    <h3>Advanced Analytics</h3>
+                    <p style="color: var(--text-secondary);">This feature is available in the Pro Plan.</p>
+                </div>
+            </div>
+
+            <!-- Documents View (Placeholder) -->
+            <div id="documents-view" class="view-section" style="display: none;">
+                <div class="kpi-card full-width">
+                    <div class="table-header">
+                        <h3>Documents</h3>
+                    </div>
+                    <div style="padding: 20px;">
+                        <div
+                            style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 8px;">
+                            <i class="ph ph-file-pdf" style="font-size: 24px; color: #EF4444;"></i>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500;">Lease Agreement - Unit 4B</div>
+                                <div style="font-size: 12px; color: var(--text-secondary);">Updated 2 days ago</div>
+                            </div>
+                            <button class="icon-btn"><i class="ph ph-download-simple"></i></button>
+                        </div>
+                        <div
+                            style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px;">
+                            <i class="ph ph-file-text" style="font-size: 24px; color: #3B82F6;"></i>
+                            <div style="flex: 1;">
+                                <div style="font-weight: 500;">Invoice #2026-001</div>
+                                <div style="font-size: 12px; color: var(--text-secondary);">Updated 5 days ago</div>
+                            </div>
+                            <button class="icon-btn"><i class="ph ph-download-simple"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings View (Placeholder) -->
+            <div id="settings-view" class="view-section" style="display: none;">
+                <div class="kpi-card full-width">
+                    <h3>Settings</h3>
+                    <div style="margin-top: 20px;">
+                        <div class="form-group">
+                            <label>Company Name</label>
+                            <input type="text" value="RealEstate Pro Inc.">
+                        </div>
+                        <div class="form-group">
+                            <label>Email Notifications</label>
+                            <select>
+                                <option>Enabled</option>
+                                <option>Disabled</option>
+                            </select>
+                        </div>
+                        <button class="btn-upgrade" style="width: auto;">Save Changes</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Help View (Placeholder) -->
+            <div id="help-view" class="view-section" style="display: none;">
+                <div class="kpi-card full-width">
+                    <h3>Help & Support</h3>
+                    <div style="margin-top: 20px;">
+                        <details
+                            style="margin-bottom: 12px; border: 1px solid var(--border-color); padding: 12px; border-radius: 8px;">
+                            <summary style="cursor: pointer; font-weight: 500;">How do I add a new property?</summary>
+                            <p style="margin-top: 8px; font-size: 14px; color: var(--text-secondary);">Go to the
+                                Properties tab and click the "+ Add Property" button.</p>
+                        </details>
+                        <details
+                            style="margin-bottom: 12px; border: 1px solid var(--border-color); padding: 12px; border-radius: 8px;">
+                            <summary style="cursor: pointer; font-weight: 500;">How do I duplicate an invoice?</summary>
+                            <p style="margin-top: 8px; font-size: 14px; color: var(--text-secondary);">Go to the
+                                Financial > Invoices tab, and click the copy icon next to any invoice.</p>
+                        </details>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Add Transaction Modal -->
+    <dialog id="addTransactionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Transaction</h3>
+                <button class="icon-btn close-modal"><i class="ph ph-x"></i></button>
+            </div>
+            <form id="transactionForm">
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" required>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <input type="text" placeholder="e.g. Monthly Rent" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Property</label>
+                        <select>
+                            <option>Sunset Villa</option>
+                            <option>Urban Heights</option>
+                            <option>Office Park A</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Type</label>
+                        <select>
+                            <option value="income">Income</option>
+                            <option value="expense">Expense</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Amount</label>
+                    <input type="number" placeholder="0.00" required>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-learn close-btn">Cancel</button>
+                    <button type="submit" class="btn-upgrade">Save Transaction</button>
+                </div>
+            </form>
+        </div>
+    </dialog>
+
+    </main>
+    </div>
+
+    <!-- Chat Widget -->
+    <div id="chat-widget">
+        <button id="chat-fab" class="chat-fab-btn">
+            <i class="ph-fill ph-chat-circle-dots"></i>
+        </button>
+
+        <div id="chat-window" class="chat-window" style="display: none;">
+            <div class="chat-header">
+                <h3>AI Assistant</h3>
+                <button id="close-chat" class="close-chat"><i class="ph ph-x"></i></button>
+            </div>
+            <div id="chat-messages" class="chat-messages">
+                <div class="message bot">
+                    Hello! I'm your AI assistant. How can I help you with your real estate finances today?
+                </div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="chat-input" placeholder="Type a message...">
+                <button id="chat-send" class="chat-send-btn">
+                    <i class="ph-fill ph-paper-plane-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
