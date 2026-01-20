@@ -276,43 +276,301 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Export Functionality
+    // Export Functionality - PDF Generation
     const exportBtn = document.querySelector('.btn-export');
     if (exportBtn) {
         exportBtn.addEventListener('click', () => {
-            const activeTab = document.querySelector('.tab.active').innerText.trim();
-            let dataToExport = [];
-            let filename = 'export.csv';
+            const activeTab = document.querySelector('.tab.active')?.innerText.trim();
 
-            if (activeTab === 'Transactions') {
-                dataToExport = transactions;
-                filename = 'transactions.csv';
-            } else if (activeTab === 'Invoices') {
-                dataToExport = invoices;
-                filename = 'invoices.csv';
-            } else {
-                alert('Export for Overview is not implemented yet. Please switch to Transactions or Invoices.');
+            if (!activeTab) {
+                alert('Please select a tab to export.');
                 return;
             }
 
-            // Simple CSV conversion
-            if (dataToExport.length > 0) {
-                const headers = Object.keys(dataToExport[0]).join(',');
-                const rows = dataToExport.map(row => Object.values(row).join(','));
-                const csvContent = "data:text/csv;charset=utf-8," + [headers, ...rows].join('\n');
+            // Initialize jsPDF
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
 
-                const encodedUri = encodeURI(csvContent);
-                const link = document.createElement("a");
-                link.setAttribute("href", encodedUri);
-                link.setAttribute("download", filename);
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
+            // Add header with branding
+            doc.setFontSize(20);
+            doc.setTextColor(34, 197, 94); // Primary green color
+            doc.text('RealEstate Pro', 14, 20);
+
+            doc.setFontSize(10);
+            doc.setTextColor(107, 114, 128); // Gray color
+            doc.text('Financial Dashboard Export', 14, 27);
+
+            // Add date
+            const today = new Date().toLocaleDateString('de-DE');
+            doc.text(`Export Date: ${today}`, 14, 33);
+
+            // Draw separator line
+            doc.setDrawColor(229, 231, 235);
+            doc.line(14, 37, 196, 37);
+
+            if (activeTab === 'Transactions') {
+                // Export Transactions as PDF
+                doc.setFontSize(14);
+                doc.setTextColor(17, 24, 39);
+                doc.text('Transactions Report', 14, 45);
+
+                // Prepare table data
+                const tableData = transactions.map(t => [
+                    t.date,
+                    t.description,
+                    t.property,
+                    t.type,
+                    `${t.amount > 0 ? '+' : ''}$${Math.abs(t.amount).toLocaleString()}`,
+                    t.status
+                ]);
+
+                // Generate table
+                doc.autoTable({
+                    startY: 50,
+                    head: [['Date', 'Description', 'Property', 'Type', 'Amount', 'Status']],
+                    body: tableData,
+                    theme: 'striped',
+                    headStyles: {
+                        fillColor: [34, 197, 94], // Primary green
+                        textColor: [255, 255, 255],
+                        fontStyle: 'bold'
+                    },
+                    styles: {
+                        fontSize: 9,
+                        cellPadding: 3
+                    },
+                    columnStyles: {
+                        0: { cellWidth: 25 },
+                        1: { cellWidth: 50 },
+                        2: { cellWidth: 35 },
+                        3: { cellWidth: 20 },
+                        4: { cellWidth: 30, halign: 'right' },
+                        5: { cellWidth: 25 }
+                    },
+                    didParseCell: function (data) {
+                        // Color code amounts
+                        if (data.column.index === 4 && data.section === 'body') {
+                            const amount = transactions[data.row.index].amount;
+                            if (amount > 0) {
+                                data.cell.styles.textColor = [16, 185, 129]; // Green for income
+                            } else {
+                                data.cell.styles.textColor = [239, 68, 68]; // Red for expense
+                            }
+                        }
+                    }
+                });
+
+                // Add summary at the bottom
+                const finalY = doc.lastAutoTable.finalY + 10;
+                const totalIncome = transactions.filter(t => t.amount > 0).reduce((sum, t) => sum + t.amount, 0);
+                const totalExpense = transactions.filter(t => t.amount < 0).reduce((sum, t) => sum + Math.abs(t.amount), 0);
+                const netTotal = totalIncome - totalExpense;
+
+                doc.setFontSize(10);
+                doc.setTextColor(107, 114, 128);
+                doc.text(`Total Income: $${totalIncome.toLocaleString()}`, 14, finalY);
+                doc.text(`Total Expenses: $${totalExpense.toLocaleString()}`, 14, finalY + 6);
+                doc.setFontSize(11);
+                doc.setTextColor(17, 24, 39);
+                doc.text(`Net Total: $${netTotal.toLocaleString()}`, 14, finalY + 14);
+
+                // Save PDF
+                doc.save(`RealEstate_Transactions_${today.replace(/\./g, '-')}.pdf`);
+
+            } else if (activeTab === 'Invoices') {
+                // Export Invoices as PDF
+                doc.setFontSize(14);
+                doc.setTextColor(17, 24, 39);
+                doc.text('Invoices Report', 14, 45);
+
+                // Prepare table data
+                const tableData = invoices.map(i => [
+                    i.number,
+                    i.client,
+                    i.property,
+                    i.due,
+                    `$${i.amount.toLocaleString()}`,
+                    i.status
+                ]);
+
+                // Generate table
+                doc.autoTable({
+                    startY: 50,
+                    head: [['Invoice #', 'Client', 'Property', 'Due Date', 'Amount', 'Status']],
+                    body: tableData,
+                    theme: 'striped',
+                    headStyles: {
+                        fillColor: [34, 197, 94], // Primary green
+                        textColor: [255, 255, 255],
+                        fontStyle: 'bold'
+                    },
+                    styles: {
+                        fontSize: 9,
+                        cellPadding: 3
+                    },
+                    columnStyles: {
+                        0: { cellWidth: 30 },
+                        1: { cellWidth: 40 },
+                        2: { cellWidth: 40 },
+                        3: { cellWidth: 25 },
+                        4: { cellWidth: 30, halign: 'right' },
+                        5: { cellWidth: 25 }
+                    }
+                });
+
+                // Add summary
+                const finalY = doc.lastAutoTable.finalY + 10;
+                const totalAmount = invoices.reduce((sum, i) => sum + i.amount, 0);
+                const paidAmount = invoices.filter(i => i.status === 'Paid').reduce((sum, i) => sum + i.amount, 0);
+                const pendingAmount = invoices.filter(i => i.status === 'Pending').reduce((sum, i) => sum + i.amount, 0);
+                const overdueAmount = invoices.filter(i => i.status === 'Overdue').reduce((sum, i) => sum + i.amount, 0);
+
+                doc.setFontSize(10);
+                doc.setTextColor(107, 114, 128);
+                doc.text(`Total Amount: $${totalAmount.toLocaleString()}`, 14, finalY);
+                doc.text(`Paid: $${paidAmount.toLocaleString()}`, 14, finalY + 6);
+                doc.text(`Pending: $${pendingAmount.toLocaleString()}`, 14, finalY + 12);
+                doc.text(`Overdue: $${overdueAmount.toLocaleString()}`, 14, finalY + 18);
+
+                // Save PDF
+                doc.save(`RealEstate_Invoices_${today.replace(/\./g, '-')}.pdf`);
+
+            } else if (activeTab === 'Overview') {
+                // Export Overview as PDF with KPI Summary
+                doc.setFontSize(14);
+                doc.setTextColor(17, 24, 39);
+                doc.text('Financial Overview Report', 14, 45);
+
+                // KPI Section
+                doc.setFontSize(12);
+                doc.setTextColor(107, 114, 128);
+                doc.text('Key Performance Indicators', 14, 55);
+
+                // Draw KPI boxes
+                let yPos = 65;
+                const kpiData = [
+                    {
+                        title: 'Total Income (This Month)',
+                        value: '$590,000',
+                        trend: '+18.2%',
+                        color: [16, 185, 129] // Green
+                    },
+                    {
+                        title: 'Total Expenses (This Month)',
+                        value: '$205,000',
+                        trend: '-8.5%',
+                        color: [239, 68, 68] // Red
+                    },
+                    {
+                        title: 'Net Profit (This Month)',
+                        value: '$385,000',
+                        trend: '+24.3%',
+                        color: [75, 85, 99] // Gray
+                    },
+                    {
+                        title: 'Pending Payments',
+                        value: '$128,750',
+                        trend: '3 Overdue',
+                        color: [245, 158, 11] // Orange
+                    }
+                ];
+
+                kpiData.forEach((kpi, index) => {
+                    // Draw box background
+                    doc.setFillColor(249, 250, 251);
+                    doc.roundedRect(14, yPos, 180, 25, 3, 3, 'F');
+
+                    // Title
+                    doc.setFontSize(9);
+                    doc.setTextColor(107, 114, 128);
+                    doc.text(kpi.title, 20, yPos + 8);
+
+                    // Value
+                    doc.setFontSize(16);
+                    doc.setTextColor(17, 24, 39);
+                    doc.text(kpi.value, 20, yPos + 18);
+
+                    // Trend
+                    doc.setFontSize(9);
+                    doc.setTextColor(...kpi.color);
+                    doc.text(kpi.trend, 160, yPos + 18);
+
+                    yPos += 32;
+                });
+
+                // Recent Transactions Summary
+                yPos += 5;
+                doc.setFontSize(12);
+                doc.setTextColor(17, 24, 39);
+                doc.text('Recent Transactions Summary', 14, yPos);
+
+                yPos += 5;
+                const recentTransactions = transactions.slice(0, 5);
+                const recentTableData = recentTransactions.map(t => [
+                    t.date,
+                    t.description,
+                    t.type,
+                    `${t.amount > 0 ? '+' : ''}$${Math.abs(t.amount).toLocaleString()}`
+                ]);
+
+                doc.autoTable({
+                    startY: yPos,
+                    head: [['Date', 'Description', 'Type', 'Amount']],
+                    body: recentTableData,
+                    theme: 'striped',
+                    headStyles: {
+                        fillColor: [34, 197, 94],
+                        textColor: [255, 255, 255],
+                        fontStyle: 'bold'
+                    },
+                    styles: {
+                        fontSize: 8,
+                        cellPadding: 2
+                    },
+                    columnStyles: {
+                        0: { cellWidth: 30 },
+                        1: { cellWidth: 80 },
+                        2: { cellWidth: 30 },
+                        3: { cellWidth: 40, halign: 'right' }
+                    },
+                    didParseCell: function (data) {
+                        if (data.column.index === 3 && data.section === 'body') {
+                            const amount = recentTransactions[data.row.index].amount;
+                            if (amount > 0) {
+                                data.cell.styles.textColor = [16, 185, 129];
+                            } else {
+                                data.cell.styles.textColor = [239, 68, 68];
+                            }
+                        }
+                    }
+                });
+
+                // Financial Summary at bottom
+                const finalY = doc.lastAutoTable.finalY + 10;
+                doc.setFontSize(10);
+                doc.setTextColor(107, 114, 128);
+                doc.text('Monthly Financial Summary:', 14, finalY);
+
+                const totalIncome = transactions.filter(t => t.amount > 0).reduce((sum, t) => sum + t.amount, 0);
+                const totalExpense = transactions.filter(t => t.amount < 0).reduce((sum, t) => sum + Math.abs(t.amount), 0);
+                const netProfit = totalIncome - totalExpense;
+
+                doc.text(`Total Income: $${totalIncome.toLocaleString()}`, 14, finalY + 6);
+                doc.text(`Total Expenses: $${totalExpense.toLocaleString()}`, 14, finalY + 12);
+                doc.setFontSize(11);
+                doc.setTextColor(17, 24, 39);
+                doc.text(`Net Profit: $${netProfit.toLocaleString()}`, 14, finalY + 20);
+
+                // Save PDF
+                doc.save(`RealEstate_Overview_${today.replace(/\./g, '-')}.pdf`);
+
             } else {
-                alert('No data to export.');
+                alert('Unknown tab selected. Please try again.');
+                return;
             }
         });
     }
+
 
     // 5. Tab Interactivity
 
