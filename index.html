@@ -87,13 +87,38 @@
                         <i class="ph ph-bell"></i>
                         <span class="badge-dot"></span>
                     </button>
-                    <div class="user-profile">
-                        <div class="avatar">Be</div>
+                    <div class="user-profile" id="userProfileBtn">
+                        <div class="avatar">BC</div>
                         <div class="user-info">
                             <span class="user-name">Be Confidency</span>
                             <span class="user-email">helloconfidenc@gmail.com</span>
                         </div>
                         <i class="ph ph-caret-down"></i>
+
+                        <!-- User Dropdown Menu -->
+                        <div class="user-dropdown" id="userDropdown" style="display: none;">
+                            <div class="dropdown-header">
+                                <div class="avatar-large">BC</div>
+                                <div>
+                                    <div class="dropdown-name">Be Confidency</div>
+                                    <div class="dropdown-email">helloconfidenc@gmail.com</div>
+                                </div>
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item">
+                                <i class="ph ph-user"></i>
+                                <span>Profile Settings</span>
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="ph ph-gear"></i>
+                                <span>Account Settings</span>
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item" id="logoutBtn">
+                                <i class="ph ph-sign-out"></i>
+                                <span>Logout</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </header>
@@ -313,8 +338,16 @@
                 <div class="kpi-card full-width">
                     <div class="table-header">
                         <h3>Documents</h3>
+                        <div class="table-actions">
+                            <input type="file" id="document-upload-input" accept=".pdf,.doc,.docx,.txt"
+                                style="display: none;" multiple>
+                            <button class="btn-primary-action small"
+                                onclick="document.getElementById('document-upload-input').click()">
+                                <i class="ph ph-upload-simple"></i> Upload Document
+                            </button>
+                        </div>
                     </div>
-                    <div style="padding: 20px;">
+                    <div id="documents-list" style="padding: 20px;">
                         <div
                             style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 8px;">
                             <i class="ph ph-file-pdf" style="font-size: 24px; color: #EF4444;"></i>
@@ -322,7 +355,8 @@
                                 <div style="font-weight: 500;">Lease Agreement - Unit 4B</div>
                                 <div style="font-size: 12px; color: var(--text-secondary);">Updated 2 days ago</div>
                             </div>
-                            <button class="icon-btn"><i class="ph ph-download-simple"></i></button>
+                            <button class="icon-btn" onclick="downloadDocument('Lease Agreement - Unit 4B', 'lease')"><i
+                                    class="ph ph-download-simple"></i></button>
                         </div>
                         <div
                             style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px;">
@@ -331,7 +365,8 @@
                                 <div style="font-weight: 500;">Invoice #2026-001</div>
                                 <div style="font-size: 12px; color: var(--text-secondary);">Updated 5 days ago</div>
                             </div>
-                            <button class="icon-btn"><i class="ph ph-download-simple"></i></button>
+                            <button class="icon-btn" onclick="downloadDocument('Invoice #2026-001', 'invoice')"><i
+                                    class="ph ph-download-simple"></i></button>
                         </div>
                     </div>
                 </div>

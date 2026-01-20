@@ -1,8 +1,35 @@
 
+
 document.addEventListener('DOMContentLoaded', () => {
+    // Authentication Check
+    const currentUser = localStorage.getItem('currentUser');
+
+    if (!currentUser) {
+        // Redirect to login if not authenticated
+        window.location.href = 'login.html';
+        return;
+    }
+
+    // Parse user data
+    const userData = JSON.parse(currentUser);
+
+    // Update user profile in header
+    const userNameElement = document.querySelector('.user-name');
+    const userEmailElement = document.querySelector('.user-email');
+    const avatarElement = document.querySelector('.avatar');
+
+    if (userNameElement) userNameElement.textContent = userData.name;
+    if (userEmailElement) userEmailElement.textContent = userData.email;
+    if (avatarElement) {
+        // Get initials from name
+        const initials = userData.name.split(' ').map(n => n[0]).join('').substring(0, 2);
+        avatarElement.textContent = initials;
+    }
+
     // Shared Chart Options
     Chart.defaults.font.family = "'Inter', sans-serif";
     Chart.defaults.color = '#6B7280';
+
 
     // 1. Cash Flow Analysis Chart (Spline Area/Line)
     const ctxCashFlow = document.getElementById('cashFlowChart').getContext('2d');
@@ -946,6 +973,414 @@ document.addEventListener('DOMContentLoaded', () => {
         chatInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') sendMessage();
         });
+    }
+
+    // 9. Document Download Functionality
+    window.downloadDocument = (documentName, documentType) => {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        const today = new Date().toLocaleDateString('de-DE');
+
+        // Add header with branding
+        doc.setFontSize(20);
+        doc.setTextColor(34, 197, 94);
+        doc.text('RealEstate Pro', 14, 20);
+
+        doc.setFontSize(10);
+        doc.setTextColor(107, 114, 128);
+        doc.text('Document Management System', 14, 27);
+
+        // Draw separator line
+        doc.setDrawColor(229, 231, 235);
+        doc.line(14, 32, 196, 32);
+
+        if (documentType === 'lease') {
+            // Generate Lease Agreement PDF
+            doc.setFontSize(16);
+            doc.setTextColor(17, 24, 39);
+            doc.text('Lease Agreement - Unit 4B', 14, 45);
+
+            doc.setFontSize(10);
+            doc.setTextColor(107, 114, 128);
+            doc.text(`Document Date: ${today}`, 14, 52);
+
+            // Property Details
+            doc.setFontSize(12);
+            doc.setTextColor(17, 24, 39);
+            doc.text('Property Details', 14, 65);
+
+            doc.setFontSize(10);
+            doc.setTextColor(75, 85, 99);
+            doc.text('Property: Sunset Villa - Unit 4B', 14, 73);
+            doc.text('Address: 123 Sunset Boulevard, Los Angeles, CA 90001', 14, 80);
+            doc.text('Type: Residential Apartment', 14, 87);
+            doc.text('Size: 85 sqm', 14, 94);
+
+            // Lease Terms
+            doc.setFontSize(12);
+            doc.setTextColor(17, 24, 39);
+            doc.text('Lease Terms', 14, 110);
+
+            doc.setFontSize(10);
+            doc.setTextColor(75, 85, 99);
+            doc.text('Monthly Rent: $2,500', 14, 118);
+            doc.text('Security Deposit: $5,000', 14, 125);
+            doc.text('Lease Start Date: January 1, 2026', 14, 132);
+            doc.text('Lease End Date: December 31, 2026', 14, 139);
+            doc.text('Payment Due: 1st of each month', 14, 146);
+
+            // Tenant Information
+            doc.setFontSize(12);
+            doc.setTextColor(17, 24, 39);
+            doc.text('Tenant Information', 14, 162);
+
+            doc.setFontSize(10);
+            doc.setTextColor(75, 85, 99);
+            doc.text('Name: John Doe', 14, 170);
+            doc.text('Email: john.doe@example.com', 14, 177);
+            doc.text('Phone: +1 (555) 123-4567', 14, 184);
+
+            // Terms and Conditions
+            doc.setFontSize(12);
+            doc.setTextColor(17, 24, 39);
+            doc.text('Terms and Conditions', 14, 200);
+
+            doc.setFontSize(9);
+            doc.setTextColor(75, 85, 99);
+            const terms = [
+                '1. The tenant agrees to pay rent on time each month.',
+                '2. No subletting without written permission from the landlord.',
+                '3. Tenant is responsible for maintaining the property in good condition.',
+                '4. Pets are not allowed without prior written consent.',
+                '5. Tenant must provide 30 days notice before vacating the property.'
+            ];
+
+            let yPos = 208;
+            terms.forEach(term => {
+                doc.text(term, 14, yPos);
+                yPos += 7;
+            });
+
+            // Signature section
+            doc.setFontSize(10);
+            doc.setTextColor(17, 24, 39);
+            doc.text('Landlord Signature: _____________________', 14, 260);
+            doc.text('Tenant Signature: _____________________', 14, 270);
+
+            // Save with blob method for better compatibility
+            const pdfBlob = doc.output('blob');
+            const url = URL.createObjectURL(pdfBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `Lease_Agreement_Unit_4B_${today.replace(/\./g, '-')}.pdf`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+
+        } else if (documentType === 'invoice') {
+            // Generate Invoice PDF
+            doc.setFontSize(16);
+            doc.setTextColor(17, 24, 39);
+            doc.text('Invoice #2026-001', 14, 45);
+
+            doc.setFontSize(10);
+            doc.setTextColor(107, 114, 128);
+            doc.text(`Invoice Date: ${today}`, 14, 52);
+            doc.text('Due Date: January 30, 2026', 14, 59);
+
+            // Bill To
+            doc.setFontSize(12);
+            doc.setTextColor(17, 24, 39);
+            doc.text('Bill To:', 14, 75);
+
+            doc.setFontSize(10);
+            doc.setTextColor(75, 85, 99);
+            doc.text('Acme Corp', 14, 83);
+            doc.text('456 Business Avenue', 14, 90);
+            doc.text('New York, NY 10001', 14, 97);
+            doc.text('contact@acmecorp.com', 14, 104);
+
+            // Invoice Items Table
+            doc.autoTable({
+                startY: 115,
+                head: [['Description', 'Quantity', 'Unit Price', 'Amount']],
+                body: [
+                    ['Office Space Rent - Suite 200', '1', '$5,500', '$5,500'],
+                    ['Parking Space', '2', '$150', '$300'],
+                    ['Utilities', '1', '$200', '$200']
+                ],
+                theme: 'striped',
+                headStyles: {
+                    fillColor: [34, 197, 94],
+                    textColor: [255, 255, 255],
+                    fontStyle: 'bold'
+                },
+                styles: {
+                    fontSize: 10,
+                    cellPadding: 5
+                },
+                columnStyles: {
+                    0: { cellWidth: 100 },
+                    1: { cellWidth: 25, halign: 'center' },
+                    2: { cellWidth: 30, halign: 'right' },
+                    3: { cellWidth: 30, halign: 'right' }
+                }
+            });
+
+            // Totals
+            const finalY = doc.lastAutoTable.finalY + 10;
+            doc.setFontSize(10);
+            doc.setTextColor(75, 85, 99);
+            doc.text('Subtotal:', 140, finalY);
+            doc.text('$6,000', 180, finalY, { align: 'right' });
+
+            doc.text('Tax (10%):', 140, finalY + 7);
+            doc.text('$600', 180, finalY + 7, { align: 'right' });
+
+            doc.setFontSize(12);
+            doc.setTextColor(17, 24, 39);
+            doc.text('Total:', 140, finalY + 17);
+            doc.text('$6,600', 180, finalY + 17, { align: 'right' });
+
+            // Payment Instructions
+            doc.setFontSize(10);
+            doc.setTextColor(107, 114, 128);
+            doc.text('Payment Instructions:', 14, finalY + 35);
+            doc.setFontSize(9);
+            doc.text('Please make payment to: RealEstate Pro Inc.', 14, finalY + 42);
+            doc.text('Bank: First National Bank', 14, finalY + 49);
+            doc.text('Account Number: 1234567890', 14, finalY + 56);
+            doc.text('Reference: Invoice #2026-001', 14, finalY + 63);
+
+            // Save with blob method for better compatibility
+            const pdfBlob = doc.output('blob');
+            const url = URL.createObjectURL(pdfBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `Invoice_2026-001_${today.replace(/\./g, '-')}.pdf`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+        }
+    };
+
+
+    // 10. Document Upload Functionality with localStorage persistence
+    const uploadInput = document.getElementById('document-upload-input');
+    const documentsList = document.getElementById('documents-list');
+
+    // Store uploaded files in memory
+    let uploadedFiles = [];
+
+    // Helper function to convert File to Base64
+    const fileToBase64 = (file) => {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    };
+
+    // Helper function to save files to localStorage
+    const saveFilesToStorage = async () => {
+        const filesData = [];
+        for (const file of uploadedFiles) {
+            const base64 = await fileToBase64(file);
+            filesData.push({
+                name: file.name,
+                type: file.type,
+                size: file.size,
+                data: base64,
+                uploadDate: new Date().toISOString()
+            });
+        }
+        localStorage.setItem('uploadedDocuments', JSON.stringify(filesData));
+    };
+
+    // Helper function to load files from localStorage
+    const loadFilesFromStorage = () => {
+        const stored = localStorage.getItem('uploadedDocuments');
+        if (!stored) return;
+
+        const filesData = JSON.parse(stored);
+        filesData.forEach((fileData, index) => {
+            // Convert base64 back to File object
+            fetch(fileData.data)
+                .then(res => res.blob())
+                .then(blob => {
+                    const file = new File([blob], fileData.name, { type: fileData.type });
+                    uploadedFiles.push(file);
+
+                    // Render the document item
+                    renderDocumentItem(file, index, fileData.uploadDate);
+                });
+        });
+    };
+
+    // Helper function to render a document item
+    const renderDocumentItem = (file, index, uploadDate) => {
+        // Determine icon based on file type
+        let iconClass = 'ph-file-text';
+        let iconColor = '#3B82F6'; // Blue default
+
+        if (file.type === 'application/pdf') {
+            iconClass = 'ph-file-pdf';
+            iconColor = '#EF4444'; // Red for PDF
+        } else if (file.type.includes('word') || file.name.endsWith('.doc') || file.name.endsWith('.docx')) {
+            iconClass = 'ph-file-doc';
+            iconColor = '#2563EB'; // Blue for Word
+        } else if (file.type.includes('text')) {
+            iconClass = 'ph-file-text';
+            iconColor = '#10B981'; // Green for text
+        }
+
+        // Format file size
+        const fileSize = file.size < 1024 * 1024
+            ? `${(file.size / 1024).toFixed(1)} KB`
+            : `${(file.size / (1024 * 1024)).toFixed(1)} MB`;
+
+        // Calculate time ago
+        const timeAgo = uploadDate ? getTimeAgo(new Date(uploadDate)) : 'Uploaded just now';
+
+        // Create document item
+        const docItem = document.createElement('div');
+        docItem.style.cssText = 'display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 8px;';
+
+        docItem.innerHTML = `
+            <i class="ph ${iconClass}" style="font-size: 24px; color: ${iconColor};"></i>
+            <div style="flex: 1;">
+                <div style="font-weight: 500;">${file.name}</div>
+                <div style="font-size: 12px; color: var(--text-secondary);">${timeAgo} • ${fileSize}</div>
+            </div>
+            <button class="icon-btn" onclick="downloadUploadedFile(${index})">
+                <i class="ph ph-download-simple"></i>
+            </button>
+        `;
+
+        // Add to top of list
+        documentsList.insertBefore(docItem, documentsList.firstChild);
+    };
+
+    // Helper function to calculate time ago
+    const getTimeAgo = (date) => {
+        const seconds = Math.floor((new Date() - date) / 1000);
+
+        if (seconds < 60) return 'Uploaded just now';
+        if (seconds < 3600) return `Uploaded ${Math.floor(seconds / 60)} minutes ago`;
+        if (seconds < 86400) return `Uploaded ${Math.floor(seconds / 3600)} hours ago`;
+        return `Uploaded ${Math.floor(seconds / 86400)} days ago`;
+    };
+
+    // Load existing files on page load
+    loadFilesFromStorage();
+
+    if (uploadInput) {
+        uploadInput.addEventListener('change', async (e) => {
+            const files = Array.from(e.target.files);
+
+            if (files.length === 0) return;
+
+            for (const file of files) {
+                // Store file reference
+                uploadedFiles.push(file);
+
+                // Render immediately
+                renderDocumentItem(file, uploadedFiles.length - 1, null);
+            }
+
+            // Save to localStorage
+            await saveFilesToStorage();
+
+            // Clear input for next upload
+            uploadInput.value = '';
+
+            // Show success message
+            const successMsg = document.createElement('div');
+            successMsg.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #10B981; color: white; padding: 12px 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 9999;';
+            successMsg.textContent = `${files.length} document${files.length > 1 ? 's' : ''} uploaded successfully!`;
+            document.body.appendChild(successMsg);
+
+            setTimeout(() => {
+                successMsg.remove();
+            }, 3000);
+        });
+    }
+
+    // Download uploaded file
+    window.downloadUploadedFile = (index) => {
+        const file = uploadedFiles[index];
+        if (!file) {
+            alert('File not found!');
+            return;
+        }
+
+        const url = URL.createObjectURL(file);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = file.name;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    };
+
+    // 11. User Profile Dropdown & Logout
+    const userProfileBtn = document.getElementById('userProfileBtn');
+    const userDropdown = document.getElementById('userDropdown');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    // Toggle dropdown
+    if (userProfileBtn && userDropdown) {
+        userProfileBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isVisible = userDropdown.style.display === 'block';
+            userDropdown.style.display = isVisible ? 'none' : 'block';
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!userProfileBtn.contains(e.target)) {
+                userDropdown.style.display = 'none';
+            }
+        });
+    }
+
+    // Logout functionality
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+
+            // Clear user session
+            localStorage.removeItem('currentUser');
+
+            // Show logout message
+            const logoutMsg = document.createElement('div');
+            logoutMsg.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #10B981; color: white; padding: 12px 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 9999;';
+            logoutMsg.textContent = 'Logged out successfully!';
+            document.body.appendChild(logoutMsg);
+
+            // Redirect to login
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 1000);
+        });
+    }
+
+    // Update dropdown user info
+    const dropdownName = document.querySelector('.dropdown-name');
+    const dropdownEmail = document.querySelector('.dropdown-email');
+    const avatarLarge = document.querySelector('.avatar-large');
+
+    if (dropdownName && userData) dropdownName.textContent = userData.name;
+    if (dropdownEmail && userData) dropdownEmail.textContent = userData.email;
+    if (avatarLarge && userData) {
+        const initials = userData.name.split(' ').map(n => n[0]).join('').substring(0, 2);
+        avatarLarge.textContent = initials;
     }
 
 });
